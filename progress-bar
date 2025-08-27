@@ -3,8 +3,10 @@
 progress-bar() {
   local current=$1
   local no_of_files=$2
+  local length=$3
 
-  local length=60
+  local bar_char='|'
+  local empty_char=' '
   local percent_done=$((current * 100 / no_of_files))
   local num_bars=$((percent_done * length / 100))
 
@@ -13,14 +15,20 @@ progress-bar() {
   local i
   local s='['
   for ((i = 0; i < num_bars; i++)); do
-    s+='|'
+    s+=$bar_char
   done
   for ((i = num_bars; i < length; i++)); do
-    s+=' '
+    s+=$empty_char
   done
   s+=']'
 
   echo -ne "$s $current/$no_of_files ($percent_done%)\r"
+}
+
+process-file() {
+  local file=$1
+
+  sleep .01
 }
 
 shopt -s globstar nullglob
@@ -34,7 +42,8 @@ echo "found $len files"
 
 i=0
 for file in "${files[@]}"; do
-  progress-bar "$((i+1))" "$len"
+  progress-bar "$((i+1))" "$len" "60"
+  process-file "$file"
   ((i++))
 done
 
